@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guards II Timer</title>
+    <!-- <link rel="stylesheet" href="styles.css" />-->
+    <style>
+        * {
+    font-family: "Modesto Poster", "Modesto", "Basketville", serif;
+    text-transform: uppercase;
+    font-weight: bolder;
+    text-align: center;
+    width: 100%
+}
+.bgimage {
+    position: fixed;
+    bottom: 0px;
+    object-fit: fill;
+    left: 0%;
+    width: 100%;
+    opacity: 60%;
+}
+.timer {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    font-size: 25vw;
+    top: 20%;
+}
+.outer{
+    position: absolute;
+    width:100%;
+    text-align: center;
+    top: 5%;
+}
+.inner{ 
+    width: 25%; 
+    height: 10%;
+    display: inline-block;
+}
+.button {
+    background-color: black; 
+    color: #eee; 
+    height: 5vw;
+    width: 20vw;
+    font-size: 2vw;
+}
+::selection {
+    color: none;
+    background: none;
+}
+/* For Mozilla Firefox */
+::-moz-selection {
+    color: none;
+    background: none;
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src = "images/bgwide.png" class="bgimage" onclick="screenTap()">
+    </div>
+
+    <div class = "outer">
+        <div class = "inner"><button class="button reset" onclick="reset()">Reset</button></div>
+        <div class = "inner"><button class="button plan" onclick="plan()">Plan Cards</button></div>
+        <div class = "inner"><button class="button turn" onclick="turn()">Begin Turn</button></div>
+    </div>
+    <div class="timer" onclick="screenTap()" id="change-text">1:00</div>
+
+    <script>
+        const planTime = 60;
+        const turnOneTime = 60;
+        const turnTime = 30;
+        const changeText = document.querySelector("#change-text");
+        const timerElements = document.getElementsByClassName('timer')
+
+        let currentTime = 60;
+        let wasJustTapped = false; // track double taps to reset
+        let currentMode = 0 // 0=plan, 1=turnOne, 2+=turnTime
+        let isRunning = false;
+
+        function showTime(){
+            const prefix = (currentTime<0) ? "+" : "";
+            const positiveTime = Math.abs(currentTime)
+            const min = Math.floor(positiveTime/60);
+            const sec = positiveTime%60;
+            const spacer = (sec<10) ? "0" : "";
+            const currentTimeAsText = `${prefix}${min}:${spacer}${sec}`;
+            changeText.textContent = currentTimeAsText;
+            if (currentTime <= 0 && currentTime % 2 == 0 ) {
+                 for (el of timerElements){
+                    el.style.backgroundColor = "red";           
+                }
+            } else {
+                for (el of timerElements){
+                    el.style.backgroundColor = "rgba(0,0,0,0)";
+                } 
+            }
+        }
+
+        function selectTime(){
+            if (currentMode == 0){
+                currentTime = planTime;
+            } else if (currentMode == 1){
+                currentTime = turnOneTime;
+            } else {
+                currentTime = turnTime;
+            }
+            showTime()
+        }
+
+        function startTimer(){
+            if (!isRunning){            
+                isRunning = true;
+                setTimeout(advanceTimer, 1000);
+            }
+        }
+
+        function advanceTimer(){
+            if (isRunning) {
+                wasJustTapped = false;
+                currentTime -=1;
+                showTime();
+                setTimeout(advanceTimer, 1000);
+            } else {
+                showTime();
+            }
+        }
+
+        function screenTap(){
+            if (wasJustTapped){
+                // If double tap, reset at planning and begin timer
+                currentMode = 0
+                selectTime();
+                startTimer();
+            } else {
+                // If first tap, advance the turn (and prepare for possible double tap)
+                wasJustTapped = true;
+                currentMode+=1;
+                selectTime();
+                startTimer();
+            }
+        }
+
+        function reset(){
+            currentMode = 0;
+            selectTime();
+            isRunning = false;
+        }
+
+        function plan(){
+            currentMode = 0
+            selectTime();
+            startTimer();
+        }
+
+        function turn(){
+            currentMode = 2;
+            selectTime();
+            startTimer();
+        }
+
+    </script>
+</body>
+</html>
