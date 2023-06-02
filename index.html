@@ -73,13 +73,13 @@
     <div class="timer" onclick="screenTap()" id="change-text">1:00</div>
 
     <script>
-        const planTime = 60;
-        const turnOneTime = 60;
-        const turnTime = 30;
+        const planTime = 75;
+        const turnOneTime = 75;
+        const turnTime = 45;
         const changeText = document.querySelector("#change-text");
         const timerElements = document.getElementsByClassName('timer')
 
-        let currentTime = 60;
+        let currentTime = 75;
         let wasJustTapped = false; // track double taps to reset
         let currentMode = 0 // 0=plan, 1=turnOne, 2+=turnTime
         let isRunning = false;
